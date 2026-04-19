@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hedef Takip</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#111;display:flex;justify-content:center;padding:20px;min-height:100vh}
+.app{background:#191919;width:100%;max-width:700px;font-family:system-ui,sans-serif;color:#fff;border-radius:12px;overflow:hidden;align-self:flex-start}
+.cover{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 40%,#0f3460 70%,#533483 100%);height:100px;position:relative;display:flex;align-items:flex-end}
+.stars-bg{position:absolute;inset:0;overflow:hidden}
+.icon-box{width:44px;height:44px;border-radius:8px;background:#c0392b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;margin:0 0 -22px 1.5rem;position:relative;z-index:2;padding:10px}
+.il{height:3px;background:#e74c3c;border-radius:2px}
+.settings-btn{position:absolute;top:10px;right:10px;z-index:10;background:rgba(255,255,255,.1);border:none;border-radius:6px;color:rgba(255,255,255,.6);font-size:12px;padding:5px 10px;cursor:pointer}
+.settings-btn:hover{background:rgba(255,255,255,.2);color:#fff}
+.content{padding:2rem 1.5rem 2rem}
+.pg-title{font-size:24px;font-weight:700;letter-spacing:-.5px;margin-bottom:1.25rem}
+
+.nav{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.5rem}
+.nc{border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:all .15s;user-select:none}
+.nc:hover{opacity:.85;transform:translateY(-1px)}
+.nc.active{box-shadow:0 0 0 2px rgba(255,255,255,.5);transform:translateY(-1px)}
+.nc .ni{font-size:14px}.nc .nl{font-size:13px;font-weight:500}
+.n1{background:#2d6a4f}.n2{background:#6b2d6b}.n3{background:#6b2a2a}.n4{background:#2d4a7a}.n5{background:#4a2d6b}.n6{background:#5a4a1a}
+
+.tab{display:none;animation:fadeIn .2s ease}
+.tab.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.sec-title{font-size:16px;font-weight:600;margin-bottom:.75rem}
+.divider{height:1px;background:rgba(255,255,255,.08);margin:1.25rem 0}
+
+.ders-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ders-card{border-radius:10px;padding:12px}
+.dc-mat{background:#3a1a5a}.dc-fiz{background:#1a3a5a}.dc-bio{background:#1a4a2a}.dc-kim{background:#5a3a1a}
+.dn{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.15)}
+.dmeta{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:6px}
+.dpw{height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-bottom:8px}
+.dpb{height:3px;border-radius:2px;transition:width .3s}
+
+.trow{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.tcb{width:13px;height:13px;border:1.5px solid rgba(255,255,255,.4);border-radius:3px;flex-shrink:0;cursor:pointer;transition:all .15s;position:relative}
+.tcb.on{background:rgba(255,255,255,.6);border-color:transparent}
+.tcb.on::after{content:'';position:absolute;top:1px;left:2px;width:6px;height:4px;border-left:2px solid #333;border-bottom:2px solid #333;transform:rotate(-45deg)}
+.ttxt{font-size:11px;color:rgba(255,255,255,.85);flex:1}
+.ttxt.s{text-decoration:line-through;opacity:.4}
+.tdel{font-size:10px;color:rgba(255,255,255,.2);cursor:pointer;padding:2px 4px;border-radius:3px;flex-shrink:0;display:none}
+.trow:hover .tdel{display:block}
+.tdel:hover{color:#E24B4A}
+
+.add-btn{display:flex;align-items:center;gap:5px;margin-top:6px;color:rgba(255,255,255,.3);font-size:11px;cursor:pointer;padding:3px 0;user-select:none}
+.add-btn:hover{color:rgba(255,255,255,.6)}
+.add-row{display:none;gap:6px;margin-top:6px}
+.add-row.open{display:flex}
+.add-row input{flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:5px;color:#fff;font-size:11px;padding:4px 8px;outline:none}
+.add-row input::placeholder{color:rgba(255,255,255,.3)}
+.add-row input:focus{border-color:rgba(255,255,255,.35)}
+.add-row button{background:rgba(255,255,255,.12);border:none;border-radius:5px;color:#fff;font-size:11px;padding:4px 8px;cursor:pointer}
+.add-row button:hover{background:rgba(255,255,255,.2)}
+
+.week-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.week-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.day{border-radius:10px;padding:10px}
+.dc-ol{background:#5a4a1a}.dc-go{background:#6b5a1a}.dc-pu{background:#5a1a5a}.dc-dp{background:#3a1a5a}.dc-br{background:#5a2a1a}.dc-bl{background:#1a2a5a}.dc-gr{background:#1a4a2a}
+.dname{font-size:13px;font-weight:600;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.15)}
+
+.prog-row{display:flex;align-items:center;gap:8px;margin-bottom:1rem}
+.pw{flex:1;height:4px;background:rgba(255,255,255,.1);border-radius:2px}
+.pf{height:4px;border-radius:2px;width:0%;transition:width .3s}
+.plb{font-size:12px;color:rgba(255,255,255,.4);min-width:36px;text-align:right}
+.dcard{background:#222;border-radius:10px;padding:1rem;margin-bottom:8px}
+.dheader{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.ddot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-ders{background:#E24B4A}.dot-is{background:#7F77DD}.dot-sag{background:#1D9E75}.dot-gel{background:#EF9F27}
+.dlabel{font-size:11px;font-weight:500;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em}
+.dcnt{margin-left:auto;font-size:11px;color:rgba(255,255,255,.3)}
+.dtask{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.dtask:last-child{border-bottom:none}
+.dcb2{width:15px;height:15px;border-radius:4px;border:1.5px solid rgba(255,255,255,.2);flex-shrink:0;cursor:pointer;position:relative}
+.dcb2.on{border-color:transparent}
+.dcb2.on::after{content:'';position:absolute;top:2px;left:3px;width:7px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg)}
+.on-pu{background:#7F77DD}.on-te{background:#1D9E75}.on-am{background:#EF9F27}.on-re{background:#E24B4A}
+.dtxt2{font-size:12px;color:rgba(255,255,255,.75);flex:1}
+.dtxt2.s{text-decoration:line-through;opacity:.35}
+.tag{font-size:10px;padding:2px 6px;border-radius:10px;flex-shrink:0;cursor:pointer;user-select:none}
+.th{background:rgba(224,74,74,.25);color:#F09595}.tm{background:rgba(186,117,23,.25);color:#FAC775}.tl{background:rgba(29,158,117,.25);color:#9FE1CB}
+.tdel2{font-size:10px;color:rgba(255,255,255,.2);cursor:pointer;padding:2px 4px;border-radius:3px;display:none}
+.dtask:hover .tdel2{display:block}
+.tdel2:hover{color:#E24B4A}
+
+.sec-card{background:#222;border-radius:12px;padding:1.25rem;margin-bottom:8px}
+
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:100}
+.modal-bg.open{display:flex}
+.modal{background:#252525;border-radius:12px;padding:1.5rem;width:300px;border:1px solid rgba(255,255,255,.12)}
+.modal h3{font-size:15px;font-weight:600;margin-bottom:1rem}
+.modal label{font-size:12px;color:rgba(255,255,255,.5);display:block;margin-bottom:4px;margin-top:10px}
+.modal input{width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.15);border-radius:6px;color:#fff;font-size:13px;padding:7px 10px;outline:none}
+.modal input:focus{border-color:rgba(255,255,255,.4)}
+.modal-btns{display:flex;gap:8px;margin-top:1rem}
+.modal-btns button{flex:1;padding:8px;border-radius:6px;font-size:13px;cursor:pointer;border:none}
+.btn-save{background:#7F77DD;color:#fff}.btn-cancel{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7)}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="cover" style="position:relative">
+    <div class="stars-bg" id="sb"></div>
+    <div class="icon-box">
+      <div class="il" style="width:24px"></div>
+      <div class="il" style="width:16px"></div>
+      <div class="il" style="width:20px"></div>
+    </div>
+    <button class="settings-btn" onclick="openSettings()">⚙ Ayarlar</button>
+  </div>
+  <div class="content">
+    <div class="pg-title" id="pg-title">Hedef Takip</div>
+    <div class="nav">
+      <div class="nc n1" onclick="goTab('gunluk',this)"><span class="ni">📋</span><span class="nl">Günlük</span></div>
+      <div class="nc n2" onclick="goTab('haftalik',this)"><span class="ni">📆</span><span class="nl">Haftalık</span></div>
+      <div class="nc n3" onclick="goTab('dersler',this)"><span class="ni">📚</span><span class="nl">Dersler</span></div>
+      <div class="nc n4" onclick="goTab('is',this)"><span class="ni">💼</span><span class="nl">İş</span></div>
+      <div class="nc n5" onclick="goTab('saglik',this)"><span class="ni">🏃</span><span class="nl">Sağlık</span></div>
+      <div class="nc n6" onclick="goTab('gelisim',this)"><span class="ni">🧠</span><span class="nl">Gelişim</span></div>
+    </div>
+
+    <div class="tab active" id="tab-gunluk">
+      <div class="sec-title" id="daily-title">Bugünün Hedefleri</div>
+      <div class="prog-row">
+        <div class="pw"><div class="pf" id="dprog" style="background:#7F77DD"></div></div>
+        <div class="plb" id="dplb">0 / 0</div>
+      </div>
+      <div id="daily-sections"></div>
+    </div>
+
+    <div class="tab" id="tab-haftalik">
+      <div class="sec-title">Haftalık Program</div>
+      <div class="week-grid" id="wg1"></div>
+      <div class="week-grid3" id="wg2"></div>
+    </div>
+
+    <div class="tab" id="tab-dersler">
+      <div class="sec-title">Dersler</div>
+      <div class="ders-grid" id="ders-grid"></div>
+    </div>
+
+    <div class="tab" id="tab-is">
+      <div class="sec-title">İş / Kariyer</div>
+      <div id="is-content"></div>
+    </div>
+
+    <div class="tab" id="tab-saglik">
+      <div class="sec-title">Sağlık / Spor</div>
+      <div id="saglik-content"></div>
+    </div>
+
+    <div class="tab" id="tab-gelisim">
+      <div class="sec-title">Kişisel Gelişim</div>
+      <div id="gelisim-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-bg" id="settings-modal">
+  <div class="modal">
+    <h3>Ayarlar</h3>
+    <label>Sayfa başlığı</label>
+    <input type="text" id="s-title">
+    <label>Bugünün tarihi</label>
+    <input type="text" id="s-date">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="document.getElementById('settings-modal').classList.remove('open')">İptal</button>
+      <button class="btn-save" onclick="saveSettings()">Kaydet</button>
+    </div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)">
+      <button onclick="clearAll()" style="width:100%;padding:8px;background:rgba(226,75,74,.2);border:1px solid rgba(226,75,74,.3);border-radius:6px;color:#F09595;font-size:12px;cursor:pointer">Tüm verileri sıfırla</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Stars
+const sb = document.getElementById('sb');
+for (let i = 0; i < 40; i++) {
+  const el = document.createElement('div');
+  const sz = (Math.random() * 2 + 1).toFixed(1) + 'px';
+  el.style.cssText = `position:absolute;background:#fff;border-radius:50%;left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz};height:${sz};opacity:${(Math.random()*.5+.2).toFixed(2)}`;
+  sb.appendChild(el);
+}
+
+// STATE
+const KEY = 'htakip_v4';
+function load() { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch(e) { return null; } }
+function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+
+const DEFAULT = {
+  title: 'Hedef Takip',
+  date: '19 Nisan',
+  dersler: [
+    { id:'mat', name:'Matematik', icon:'➗', color:'dc-mat', prog:65, meta:'Bu hafta: 3 konu · 12 soru', tasks:[{t:'Türev konusunu tekrar et',done:false},{t:'20 soru çöz',done:false},{t:'Deneme sınavı',done:false}] },
+    { id:'fiz', name:'Fizik',     icon:'⚡', color:'dc-fiz', prog:40, meta:'Bu hafta: 2 konu · 8 soru',  tasks:[{t:'Kuvvet ve hareket',done:false},{t:'Formülleri ezberle',done:false},{t:'Soru bankası',done:false}] },
+    { id:'bio', name:'Biyoloji',  icon:'🧬', color:'dc-bio', prog:80, meta:'Bu hafta: 4 konu · 15 soru', tasks:[{t:'Hücre bölünmesi',done:false},{t:'Test çöz',done:false},{t:'Özet çıkar',done:false}] },
+    { id:'kim', name:'Kimya',     icon:'🧪', color:'dc-kim', prog:30, meta:'Bu hafta: 2 konu · 6 soru',  tasks:[{t:'Mol hesaplamaları',done:false},{t:'Periyodik tablo',done:false},{t:'Soru çöz',done:false}] }
+  ],
+  week: [
+    { name:'Pazartesi', color:'dc-ol', tasks:[{t:'Matematik',done:false},{t:'30 dk koşu',done:false},{t:'Kitap oku',done:false}] },
+    { name:'Salı',      color:'dc-go', tasks:[{t:'Fizik',done:false}] },
+    { name:'Çarşamba',  color:'dc-pu', tasks:[{t:'Biyoloji',done:false}] },
+    { name:'Perşembe',  color:'dc-dp', tasks:[{t:'Kimya',done:false}] },
+    { name:'Cuma',      color:'dc-br', tasks:[{t:'Deneme sınavı',done:false}] },
+    { name:'Cumartesi', color:'dc-bl', tasks:[] },
+    { name:'Pazar',     color:'dc-gr', tasks:[] }
+  ],
+  daily: [
+    { id:'ders', label:'Dersler',          dot:'dot-ders', cls:'on-re', tasks:[{t:'Matematik — 20 soru çöz',done:false,pri:'h'},{t:'Biyoloji — hücre bölünmesi özeti',done:false,pri:'m'}] },
+    { id:'is',   label:'İş / Kariyer',     dot:'dot-is',   cls:'on-pu', tasks:[{t:'Q2 proje raporunu hazırla',done:false,pri:'h'},{t:'Ekip toplantısı notlarını düzenle',done:false,pri:'m'}] },
+    { id:'sag',  label:'Sağlık / Spor',    dot:'dot-sag',  cls:'on-te', tasks:[{t:'30 dk koşu',done:false,pri:'h'},{t:'2 litre su iç',done:false,pri:'l'}] },
+    { id:'gel',  label:'Kişisel Gelişim',  dot:'dot-gel',  cls:'on-am', tasks:[{t:'20 sayfa kitap oku',done:false,pri:'m'},{t:'Yeni İngilizce kelime öğren',done:false,pri:'l'}] }
+  ],
+  is:      { tasks:[{t:'Q2 proje raporunu hazırla',done:false},{t:'Ekip toplantısı notlarını düzenle',done:false},{t:'CV güncelle',done:false}] },
+  saglik:  { tasks:[{t:'30 dk koşu',done:false},{t:'2 litre su iç',done:false},{t:'Uyku düzenini koru',done:false}] },
+  gelisim: { tasks:[{t:'20 sayfa kitap oku',done:false},{t:'Yeni İngilizce kelime öğren',done:false},{t:'Podcast dinle',done:false}] }
+};
+
+let state = load() || JSON.parse(JSON.stringify(DEFAULT));
+
+// TABS
+function goTab(id, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nc').forEach(n => n.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+// SETTINGS
+function openSettings() {
+  document.getElementById('s-title').value = state.title;
+  document.getElementById('s-date').value = state.date;
+  document.getElementById('settings-modal').classList.add('open');
+}
+function saveSettings() {
+  state.title = document.getElementById('s-title').value.trim() || 'Hedef Takip';
+  state.date  = document.getElementById('s-date').value.trim()  || 'Bugün';
+  save(); render();
+  document.getElementById('settings-modal').classList.remove('open');
+}
+function clearAll() {
+  if (confirm('Tüm veriler silinecek, emin misin?')) {
+    state = JSON.parse(JSON.stringify(DEFAULT));
+    save(); render();
+    document.getElementById('settings-modal').classList.remove('open');
+  }
+}
+
+// ADD ROW TOGGLE
+function toggleAdd(btn) {
+  const row = btn.nextElementSibling;
+  const isOpen = row.classList.contains('open');
+  row.classList.toggle('open');
+  btn.style.color = isOpen ? '' : 'rgba(255,255,255,.6)';
+  if (!isOpen) setTimeout(() => row.querySelector('input').focus(), 50);
+}
+
+// DERSLER
+const progColors = { 'dc-mat':'#7F77DD','dc-fiz':'#378ADD','dc-bio':'#1D9E75','dc-kim':'#EF9F27' };
+function renderDersler() {
+  document.getElementById('ders-grid').innerHTML = state.dersler.map((d, di) => `
+    <div class="ders-card ${d.color}">
+      <div class="dn"><span>${d.icon}</span><span>${d.name}</span></div>
+      <div class="dmeta">${d.meta}</div>
+      <div class="dpw"><div class="dpb" style="width:${d.prog}%;background:${progColors[d.color]||'#7F77DD'}"></div></div>
+      ${d.tasks.map((tk, ti) => `
+        <div class="trow">
+          <div class="tcb${tk.done?' on':''}" onclick="toggleDers(${di},${ti})"></div>
+          <span class="ttxt${tk.done?' s':''}">${tk.t}</span>
+          <span class="tdel" onclick="delDers(${di},${ti})">✕</span>
+        </div>`).join('')}
+      <div class="add-btn" onclick="toggleAdd(this)">+ Görev ekle</div>
+      <div class="add-row">
+        <input type="text" placeholder="Görev adı..."
+          onkeydown="if(event.key==='Enter'&&this.value.trim()){addDersTask(${di},this.value);this.value='';}if(event.key==='Escape'){this.closest('.add-row').classList.remove('open');}">
+        <button onclick="let i=this.previousElementSibling;if(i.value.trim()){addDersTask(${di},i.value);i.value='';}">↵</button>
+      </div>
+    </div>`).join('');
+}
+function toggleDers(di, ti) { state.dersler[di].tasks[ti].done = !state.dersler[di].tasks[ti].done; save(); renderDersler(); }
+function delDers(di, ti)    { state.dersler[di].tasks.splice(ti, 1); save(); renderDersler(); }
+function addDersTask(di, t) { state.dersler[di].tasks.push({t:t.trim(),done:false}); save(); renderDersler(); }
+
+// WEEK
+function renderWeek() {
+  function dayHTML(d, wi) {
+    return `<div class="day ${d.color}">
+      <div class="dname">${d.name}</div>
+      ${d.tasks.map((tk, ti) => `
+        <div class="trow">
+          <div class="tcb${tk.done?' on':''}" onclick="toggleWeek(${wi},${ti})"></div>
+          <span class="ttxt${tk.done?' s':''}">${tk.t}</span>
+          <span class="tdel" onclick="delWeek(${wi},${ti})">✕</span>
+        </div>`).join('')}
+      <div class="add-btn" onclick="toggleAdd(this)">+ ekle</div>
+      <div class="add-row">
+        <input type="text" placeholder="Görev..."
+          onkeydown="if(event.key==='Enter'&&this.value.trim()){addWeekTask(${wi},this.value);this.value='';}if(event.key==='Escape'){this.closest('.add-row').classList.remove('open');}">
+        <button onclick="let i=this.previousElementSibling;if(i.value.trim()){addWeekTask(${wi},i.value);i.value='';}">↵</button>
+      </div>
+    </div>`;
+  }
+  document.getElementById('wg1').innerHTML = state.week.slice(0,4).map((d,i) => dayHTML(d,i)).join('');
+  document.getElementById('wg2').innerHTML = state.week.slice(4).map((d,i) => dayHTML(d,i+4)).join('');
+}
+function toggleWeek(wi, ti) { state.week[wi].tasks[ti].done = !state.week[wi].tasks[ti].done; save(); renderWeek(); }
+function delWeek(wi, ti)    { state.week[wi].tasks.splice(ti, 1); save(); renderWeek(); }
+function addWeekTask(wi, t) { state.week[wi].tasks.push({t:t.trim(),done:false}); save(); renderWeek(); }
+
+// DAILY
+const priLabel = { h:'yüksek', m:'orta', l:'düşük' };
+const priClass  = { h:'th', m:'tm', l:'tl' };
+function renderDaily() {
+  document.getElementById('daily-title').textContent = 'Bugünün Hedefleri — ' + state.date;
+  const total = state.daily.reduce((a,s) => a + s.tasks.length, 0);
+  const done  = state.daily.reduce((a,s) => a + s.tasks.filter(t => t.done).length, 0);
+  document.getElementById('dprog').style.width = (total ? Math.round(done/total*100) : 0) + '%';
+  document.getElementById('dplb').textContent  = done + ' / ' + total;
+  document.getElementById('daily-sections').innerHTML = state.daily.map((sec, si) => {
+    const sd = sec.tasks.filter(t => t.done).length;
+    return `<div class="dcard">
+      <div class="dheader">
+        <div class="ddot ${sec.dot}"></div>
+        <span class="dlabel">${sec.label}</span>
+        <span class="dcnt">${sd}/${sec.tasks.length}</span>
+      </div>
+      ${sec.tasks.map((tk, ti) => `
+        <div class="dtask">
+          <div class="dcb2${tk.done?' on '+sec.cls:''}" onclick="toggleDaily(${si},${ti})"></div>
+          <span class="dtxt2${tk.done?' s':''}">${tk.t}</span>
+          <span class="tag ${priClass[tk.pri]||'tm'}" onclick="cyclePri(${si},${ti})">${priLabel[tk.pri]||'orta'}</span>
+          <span class="tdel2" onclick="delDaily(${si},${ti})">✕</span>
+        </div>`).join('')}
+      <div class="add-btn" onclick="toggleAdd(this)" style="font-size:11px;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);cursor:pointer">+ Görev ekle</div>
+      <div class="add-row">
+        <input type="text" placeholder="Görev adı..."
+          onkeydown="if(event.key==='Enter'&&this.value.trim()){addDaily(${si},this.value);this.value='';}if(event.key==='Escape'){this.closest('.add-row').classList.remove('open');}">
+        <button onclick="let i=this.previousElementSibling;if(i.value.trim()){addDaily(${si},i.value);i.value='';}">↵</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleDaily(si, ti) { state.daily[si].tasks[ti].done = !state.daily[si].tasks[ti].done; save(); renderDaily(); }
+function delDaily(si, ti)    { state.daily[si].tasks.splice(ti, 1); save(); renderDaily(); }
+function addDaily(si, t)     { state.daily[si].tasks.push({t:t.trim(),done:false,pri:'m'}); save(); renderDaily(); }
+function cyclePri(si, ti)    { const p=['h','m','l']; const cur=state.daily[si].tasks[ti].pri||'m'; state.daily[si].tasks[ti].pri=p[(p.indexOf(cur)+1)%3]; save(); renderDaily(); }
+
+// SIMPLE SECTIONS
+const sectionMeta = {
+  is:      { color:'#7F77DD' },
+  saglik:  { color:'#1D9E75' },
+  gelisim: { color:'#EF9F27' }
+};
+function renderSection(key) {
+  const m    = sectionMeta[key];
+  const sec  = state[key];
+  const done = sec.tasks.filter(t => t.done).length;
+  const total = sec.tasks.length;
+  const pct  = total ? Math.round(done/total*100) : 0;
+  document.getElementById(key + '-content').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
+      <div style="flex:1;height:4px;background:rgba(255,255,255,.1);border-radius:2px">
+        <div style="height:4px;background:${m.color};border-radius:2px;width:${pct}%;transition:width .3s"></div>
+      </div>
+      <span style="font-size:12px;color:rgba(255,255,255,.4)">${done} / ${total}</span>
+    </div>
+    <div class="sec-card">
+      ${sec.tasks.map((tk, ti) => `
+        <div class="trow" style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+          <div class="tcb${tk.done?' on':''}" onclick="toggleSec('${key}',${ti})"></div>
+          <span class="ttxt${tk.done?' s':''}" style="font-size:13px">${tk.t}</span>
+          <span class="tdel" onclick="delSec('${key}',${ti})">✕</span>
+        </div>`).join('')}
+      <div class="add-btn" onclick="toggleAdd(this)" style="margin-top:10px">+ Görev ekle</div>
+      <div class="add-row">
+        <input type="text" placeholder="Görev adı..."
+          onkeydown="if(event.key==='Enter'&&this.value.trim()){addSec('${key}',this.value);this.value='';}if(event.key==='Escape'){this.closest('.add-row').classList.remove('open');}">
+        <button onclick="let i=this.previousElementSibling;if(i.value.trim()){addSec('${key}',i.value);i.value='';}">↵</button>
+      </div>
+    </div>`;
+}
+function toggleSec(key, ti) { state[key].tasks[ti].done = !state[key].tasks[ti].done; save(); renderSection(key); }
+function delSec(key, ti)    { state[key].tasks.splice(ti, 1); save(); renderSection(key); }
+function addSec(key, t)     { state[key].tasks.push({t:t.trim(),done:false}); save(); renderSection(key); }
+
+function render() {
+  document.getElementById('pg-title').textContent = state.title;
+  renderDersler(); renderWeek(); renderDaily();
+  renderSection('is'); renderSection('saglik'); renderSection('gelisim');
+}
+
+render();
+</script>
+</body>
+</html>
